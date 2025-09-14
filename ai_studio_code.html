@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto mt-10 p-5 bg-white rounded-lg shadow-lg max-w-md" 
+         x-data="{ 
+             expenses: JSON.parse(localStorage.getItem('expenses')) || [],
+             expenseName: '',
+             expenseAmount: '',
+             addExpense() {
+                 if (this.expenseName.trim() === '' || this.expenseAmount.trim() === '') return;
+                 this.expenses.push({ id: Date.now(), name: this.expenseName, amount: parseFloat(this.expenseAmount) });
+                 this.expenseName = '';
+                 this.expenseAmount = '';
+                 this.saveExpenses();
+             },
+             deleteExpense(id) {
+                 this.expenses = this.expenses.filter(expense => expense.id !== id);
+                 this.saveExpenses();
+             },
+             saveExpenses() {
+                 localStorage.setItem('expenses', JSON.stringify(this.expenses));
+             }
+         }">
+
+        <div class="flex items-center mb-6">
+            <img src="https://media.licdn.com/dms/image/v2/C4E03AQHO65AhC3gKiQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1630070478061?e=2147483647&v=beta&t=sy2QjXyNNSRiZxsY4Dkx0Hk0qUyM4AXL-NDHXiH9h5g" alt="Logo" class="w-16 h-16 mr-4">
+            <h1 class="text-3xl font-bold text-gray-800">Expense Tracker</h1>
+        </div>
+
+        <div class="mb-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">Add Expense</h2>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" placeholder="Expense Name" x-model="expenseName" class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="number" placeholder="Amount" x-model="expenseAmount" class="w-full sm:w-32 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button @click="addExpense" class="mt-4 w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition-colors">Add Expense</button>
+        </div>
+
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">Expenses</h2>
+            <ul class="space-y-3">
+                <template x-for="expense in expenses" :key="expense.id">
+                    <li class="flex justify-between items-center p-4 bg-gray-50 rounded-md shadow-sm">
+                        <div>
+                            <span class="font-medium text-gray-800" x-text="expense.name"></span>:
+                            <span class="text-gray-600" x-text="'$' + expense.amount.toFixed(2)"></span>
+                        </div>
+                        <button @click="deleteExpense(expense.id)" class="px-3 py-1 bg-red-500 text-white text-xs font-bold uppercase rounded-md hover:bg-red-600 transition-colors">Delete</button>
+                    </li>
+                </template>
+                <li x-show="expenses.length === 0" class="text-center text-gray-500 py-4">
+                    No expenses added yet.
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
